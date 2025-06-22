@@ -67,8 +67,8 @@ UART_HandleTypeDef huart3;
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 /* USER CODE BEGIN PV */
-#define PORTA_BASE_ADDR 0x40020000U
-#define Grn_LED_Pin 5
+#define PORTB_BASE_ADDR 0x40020400U // Use Port B base address because the LED pin is on GPIO Port B
+#define Blue_LED_Pin 7 // We're using the LED associated with pin PB7, which is a blue LED
 #define LOOP_DELAY 2000000U
 
 /* USER CODE END PV */
@@ -96,18 +96,18 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-	//Begin by declaring pointers to the port A register set.
-	volatile uint32_t *PortA_MODER = (uint32_t *) (PORTA_BASE_ADDR);
-	volatile uint32_t *PortA_OTYPER = (uint32_t *) (PORTA_BASE_ADDR+0x04);
-	volatile uint32_t *PortA_SPEEDR = (uint32_t *) (PORTA_BASE_ADDR+0x08);
-	volatile uint32_t *PortA_PUPDR = (uint32_t *) (PORTA_BASE_ADDR+0X0c);
-	volatile uint32_t *PortA_ODR = (uint32_t *) (PORTA_BASE_ADDR+0x14);
-	volatile uint32_t *PortA_BSRR = (uint32_t *) (PORTA_BASE_ADDR+0x18);
+	//Begin by declaring pointers to the port B register set.
+	volatile uint32_t *PortB_MODER = (uint32_t *) (PORTB_BASE_ADDR);
+	volatile uint32_t *PortB_OTYPER = (uint32_t *) (PORTB_BASE_ADDR+0x04);
+	volatile uint32_t *PortB_SPEEDR = (uint32_t *) (PORTB_BASE_ADDR+0x08);
+	volatile uint32_t *PortB_PUPDR = (uint32_t *) (PORTB_BASE_ADDR+0X0c);
+	volatile uint32_t *PortB_ODR = (uint32_t *) (PORTB_BASE_ADDR+0x14);
+	volatile uint32_t *PortB_BSRR = (uint32_t *) (PORTB_BASE_ADDR+0x18);
 
 	//Define masks for the bits associated with the port pin connected the green LED.
-	uint32_t GrnLEDMask32Bit1 = ((uint32_t)(0x0001 << (2*Grn_LED_Pin+1)));
-	uint32_t GrnLEDMask32Bit0 = ((uint32_t)(0x0001 << 2*Grn_LED_Pin));
-	uint16_t GrnLEDMask16Bit = ((uint32_t)(0x0001 << Grn_LED_Pin));
+	uint32_t BlueLEDMask32Bit1 = ((uint32_t)(0x0001 << (2*Blue_LED_Pin+1)));
+	uint32_t BlueLEDMask32Bit0 = ((uint32_t)(0x0001 << 2*Blue_LED_Pin));
+	uint16_t BlueLEDMask16Bit = ((uint32_t)(0x0001 << Blue_LED_Pin));
 
   /* USER CODE END 1 */
 
@@ -137,20 +137,20 @@ int main(void)
   //Now, using the masks, configure the port pin connected to the green LED.
 
   //As an output using the mode register, (MODER)
-  *PortA_MODER &= ~(GrnLEDMask32Bit1 | GrnLEDMask32Bit0);
-  *PortA_MODER |= GrnLEDMask32Bit0;
+  *PortB_MODER &= ~(BlueLEDMask32Bit1 | BlueLEDMask32Bit0);
+  *PortB_MODER |= BlueLEDMask32Bit0;
 
   //As a push-pull output using the output type register (OTYPER)
-  *PortA_OTYPER &= ~GrnLEDMask16Bit;
+  *PortB_OTYPER &= ~BlueLEDMask16Bit;
 
   //For low speed using the output speed register (SPEEDR)
-  *PortA_SPEEDR &= ~(GrnLEDMask32Bit1 | GrnLEDMask32Bit0);
+  *PortB_SPEEDR &= ~(BlueLEDMask32Bit1 | BlueLEDMask32Bit0);
 
   //No pull-up/pull-down registers using the pull-up, pull-down register (PUPDR)
-  *PortA_PUPDR &= ~(GrnLEDMask32Bit1 | GrnLEDMask32Bit0);
+  *PortB_PUPDR &= ~(BlueLEDMask32Bit1 | BlueLEDMask32Bit0);
 
   //Initialize output = 0 using the bit set/reset register (BSRR)
-  *PortA_BSRR = (uint32_t) (0x0001 << (Grn_LED_Pin + 16));
+  *PortB_BSRR = (uint32_t) (0x0001 << (Blue_LED_Pin + 16));
 
   /* USER CODE END 2 */
 
@@ -160,13 +160,13 @@ int main(void)
   {
     /* USER CODE END WHILE */
 	  //Set the LED output (set bits located bits 15..0).
-	  *PortA_BSRR = (uint32_t) (0x001 << (Grn_LED_Pin));
+	  *PortB_BSRR = (uint32_t) (0x001 << (Blue_LED_Pin));
 
 	  //Create a delay using a software loop for a delay of approximately 500ms.
 	  for(uint32_t i = 0; i < LOOP_DELAY; i++);
 
 	  //Reset the LED output (reset bits located bits 31..16).
-	  *PortA_BSRR = (uint32_t) (0x0001 << (Grn_LED_Pin + 16));
+	  *PortB_BSRR = (uint32_t) (0x0001 << (Blue_LED_Pin + 16));
 
 	  //Create a delay using a software loop for a delay of approximately 500 ms.
 	  for(uint32_t i = 0; i < LOOP_DELAY; i++);
