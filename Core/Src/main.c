@@ -67,6 +67,9 @@ UART_HandleTypeDef huart3;
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 /* USER CODE BEGIN PV */
+#define PORTA_BASE_ADDR 0x40020000U
+#define Grn_LED_Pin 5
+#define LOOP_DELAY 2000000U
 
 /* USER CODE END PV */
 
@@ -96,12 +99,12 @@ int main(void)
 	//Begin by declaring pointers to the port A register set.
 	volatile uint32_t *PortA_MODER = (uint32_t *) (PORTA_BASE_ADDR);
 	volatile uint32_t *PortA_OTYPER = (uint32_t *) (PORTA_BASE_ADDR+0x04);
-	volatile uint32_t *PortA_SPEEDR = (uint32_t_*) (PORTA_BASE_ADDR+0x08);
-	volatile uint32_t *PortA_PUPDR = (uint32_t_*) (PORTA_BASE_ADDR+0X0c);
-	volatile uint32_t *PortA_ODR = (uint32_t_*) (PORTA_BASE_ADDR+0x14);
-	volatile uint32_t *PortA_BSRR = (uint32_t_*) (PORTA_BASE_ADDR+0x18);
+	volatile uint32_t *PortA_SPEEDR = (uint32_t *) (PORTA_BASE_ADDR+0x08);
+	volatile uint32_t *PortA_PUPDR = (uint32_t *) (PORTA_BASE_ADDR+0X0c);
+	volatile uint32_t *PortA_ODR = (uint32_t *) (PORTA_BASE_ADDR+0x14);
+	volatile uint32_t *PortA_BSRR = (uint32_t *) (PORTA_BASE_ADDR+0x18);
 
-	//Define masks for the bits associated witht he port pin connected the green LED.
+	//Define masks for the bits associated with the port pin connected the green LED.
 	uint32_t GrnLEDMask32Bit1 = ((uint32_t)(0x0001 << (2*Grn_LED_Pin+1)));
 	uint32_t GrnLEDMask32Bit0 = ((uint32_t)(0x0001 << 2*Grn_LED_Pin));
 	uint16_t GrnLEDMask16Bit = ((uint32_t)(0x0001 << Grn_LED_Pin));
@@ -156,6 +159,17 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+	  //Set the LED output (set bits located bits 15..0).
+	  *PortA_BSRR = (uint32_t) (0x001 << (Grn_LED_Pin));
+
+	  //Create a delay using a software loop for a delay of approximately 500ms.
+	  for(uint32_t i = 0; i < LOOP_DELAY; i++);
+
+	  //Reset the LED output (reset bits located bits 31..16).
+	  *PortA_BSRR = (uint32_t) (0x0001 << (Grn_LED_Pin + 16));
+
+	  //Create a delay using a software loop for a delay of approximately 500 ms.
+	  for(uint32_t i = 0; i < LOOP_DELAY; i++);
 
     /* USER CODE BEGIN 3 */
   }
