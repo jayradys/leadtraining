@@ -93,18 +93,8 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-	//Begin by declaring pointers to the port A register set.
-	volatile uint32_t *PortA_MODER = (uint32_t *) (PORTA_BASE_ADDR);
-	volatile uint32_t *PortA_OTYPER = (uint32_t *) (PORTA_BASE_ADDR+0x04);
-	volatile uint32_t *PortA_SPEEDR = (uint32_t_*) (PORTA_BASE_ADDR+0x08);
-	volatile uint32_t *PortA_PUPDR = (uint32_t_*) (PORTA_BASE_ADDR+0X0c);
-	volatile uint32_t *PortA_ODR = (uint32_t_*) (PORTA_BASE_ADDR+0x14);
-	volatile uint32_t *PortA_BSRR = (uint32_t_*) (PORTA_BASE_ADDR+0x18);
 
-	//Define masks for the bits associated witht he port pin connected the green LED.
-	uint32_t GrnLEDMask32Bit1 = ((uint32_t)(0x0001 << (2*Grn_LED_Pin+1)));
-	uint32_t GrnLEDMask32Bit0 = ((uint32_t)(0x0001 << 2*Grn_LED_Pin));
-	uint16_t GrnLEDMask16Bit = ((uint32_t)(0x0001 << Grn_LED_Pin));
+
 
   /* USER CODE END 1 */
 
@@ -131,23 +121,7 @@ int main(void)
   MX_USB_OTG_FS_PCD_Init();
   /* USER CODE BEGIN 2 */
 
-  //Now, using the masks, configure the port pin connected to the green LED.
 
-  //As an output using the mode register, (MODER)
-  *PortA_MODER &= ~(GrnLEDMask32Bit1 | GrnLEDMask32Bit0);
-  *PortA_MODER |= GrnLEDMask32Bit0;
-
-  //As a push-pull output using the output type register (OTYPER)
-  *PortA_OTYPER &= ~GrnLEDMask16Bit;
-
-  //For low speed using the output speed register (SPEEDR)
-  *PortA_SPEEDR &= ~(GrnLEDMask32Bit1 | GrnLEDMask32Bit0);
-
-  //No pull-up/pull-down registers using the pull-up, pull-down register (PUPDR)
-  *PortA_PUPDR &= ~(GrnLEDMask32Bit1 | GrnLEDMask32Bit0);
-
-  //Initialize output = 0 using the bit set/reset register (BSRR)
-  *PortA_BSRR = (uint32_t) (0x0001 << (Grn_LED_Pin + 16));
 
   /* USER CODE END 2 */
 
