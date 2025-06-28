@@ -382,13 +382,13 @@ int main(void)
 
 	//Define masks for the bits associated with the port pin connected the green LED.
 	uint32_t GrnLEDMask32Bit1 = ((uint32_t)(0x0001 << (2*Grn_LED_Pin+1)));
- 8000546:	f44f 6300 	mov.w	r3, #2048	@ 0x800
+ 8000546:	f44f 4300 	mov.w	r3, #32768	@ 0x8000
  800054a:	60fb      	str	r3, [r7, #12]
 	uint32_t GrnLEDMask32Bit0 = ((uint32_t)(0x0001 << 2*Grn_LED_Pin));
- 800054c:	f44f 6380 	mov.w	r3, #1024	@ 0x400
+ 800054c:	f44f 4380 	mov.w	r3, #16384	@ 0x4000
  8000550:	60bb      	str	r3, [r7, #8]
 	uint16_t GrnLEDMask16Bit = ((uint32_t)(0x0001 << Grn_LED_Pin));
- 8000552:	2320      	movs	r3, #32
+ 8000552:	2380      	movs	r3, #128	@ 0x80
  8000554:	80fb      	strh	r3, [r7, #6]
   /* USER CODE END 1 */
 
@@ -477,7 +477,7 @@ int main(void)
   //Initialize output = 0 using the bit set/reset register (BSRR)
   *PortA_BSRR = (uint32_t) (0x0001 << (Grn_LED_Pin + 16));
  80005be:	693b      	ldr	r3, [r7, #16]
- 80005c0:	f44f 1200 	mov.w	r2, #2097152	@ 0x200000
+ 80005c0:	f44f 0200 	mov.w	r2, #8388608	@ 0x800000
  80005c4:	601a      	str	r2, [r3, #0]
   /* USER CODE BEGIN WHILE */
   while (1)
@@ -486,7 +486,7 @@ int main(void)
 	  //Set the LED output (set bits located bits 15..0).
 	  *PortA_BSRR = (uint32_t) (0x001 << (Grn_LED_Pin));
  80005c6:	693b      	ldr	r3, [r7, #16]
- 80005c8:	2220      	movs	r2, #32
+ 80005c8:	2280      	movs	r2, #128	@ 0x80
  80005ca:	601a      	str	r2, [r3, #0]
 
 	  //Create a delay using a software loop for a delay of approximately 500ms.
@@ -505,7 +505,7 @@ int main(void)
 	  //Reset the LED output (reset bits located bits 31..16).
 	  *PortA_BSRR = (uint32_t) (0x0001 << (Grn_LED_Pin + 16));
  80005e0:	693b      	ldr	r3, [r7, #16]
- 80005e2:	f44f 1200 	mov.w	r2, #2097152	@ 0x200000
+ 80005e2:	f44f 0200 	mov.w	r2, #8388608	@ 0x800000
  80005e6:	601a      	str	r2, [r3, #0]
 
 	  //Create a delay using a software loop for a delay of approximately 500 ms.
@@ -523,12 +523,12 @@ int main(void)
 	  *PortA_BSRR = (uint32_t) (0x001 << (Grn_LED_Pin));
  80005fc:	e7e3      	b.n	80005c6 <main+0x9e>
  80005fe:	bf00      	nop
- 8000600:	40020000 	.word	0x40020000
- 8000604:	40020004 	.word	0x40020004
- 8000608:	40020008 	.word	0x40020008
- 800060c:	4002000c 	.word	0x4002000c
- 8000610:	40020014 	.word	0x40020014
- 8000614:	40020018 	.word	0x40020018
+ 8000600:	40020400 	.word	0x40020400
+ 8000604:	40020404 	.word	0x40020404
+ 8000608:	40020408 	.word	0x40020408
+ 800060c:	4002040c 	.word	0x4002040c
+ 8000610:	40020414 	.word	0x40020414
+ 8000614:	40020418 	.word	0x40020418
  8000618:	001e847f 	.word	0x001e847f
 
 0800061c <SystemClock_Config>:

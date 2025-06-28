@@ -67,8 +67,8 @@ UART_HandleTypeDef huart3;
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 /* USER CODE BEGIN PV */
-#define PORTA_BASE_ADDR 0x40020000U
-#define Grn_LED_Pin 5
+#define PORTA_BASE_ADDR 0x40020400U
+#define Grn_LED_Pin 7
 #define LOOP_DELAY 2000000U
 
 /* USER CODE END PV */
