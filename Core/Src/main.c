@@ -93,8 +93,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-	volatile uint32_t *PortA_MODER = (uint32_t *) (PORTA_BASE_ADDR);
-	voltaile uint32_t *PortA_OTYPER = (uint32_t *) (PORTA_BASE_ADDR+0x04);
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
