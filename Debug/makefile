@@ -60,8 +60,8 @@ all: main-build
 main-build: Electrical\ Lead\ Training.elf secondary-outputs
 
 # Tool invocations
-Electrical\ Lead\ Training.elf Electrical\ Lead\ Training.map: $(OBJS) $(USER_OBJS) C:\Users\sokja\OneDrive\Documents\GitHub\leadtraining\STM32F767ZITX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Electrical Lead Training.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"C:\Users\sokja\OneDrive\Documents\GitHub\leadtraining\STM32F767ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Electrical Lead Training.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Electrical\ Lead\ Training.elf Electrical\ Lead\ Training.map: $(OBJS) $(USER_OBJS) C:\Users\sokja\STM32CubeIDE\workspace_1.17.0\Electrical\ Lead\ Training\STM32F767ZITX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Electrical Lead Training.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"C:\Users\sokja\STM32CubeIDE\workspace_1.17.0\Electrical Lead Training\STM32F767ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Electrical Lead Training.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
