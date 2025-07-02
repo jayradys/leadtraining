@@ -69,6 +69,8 @@ PCD_HandleTypeDef hpcd_USB_OTG_FS;
 /* USER CODE BEGIN PV */
 #define Blue_LED_GPIO_Port GPIOB
 #define Blue_LED_Pin GPIO_PIN_7
+#define Button_GPIO_Port GPIOC
+#define Button_Pin GPIO_PIN_13
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -94,7 +96,6 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
 
 
   /* USER CODE END 1 */
@@ -131,10 +132,18 @@ int main(void)
   while (1)
   {
 	  ///Toggle the LED output
-	  HAL_GPIO_TogglePin(Blue_LED_GPIO_Port, Blue_LED_Pin);
+	  //HAL_GPIO_TogglePin(Blue_LED_GPIO_Port, Blue_LED_Pin);
 
 	  //Create a delay of 500ms
-	  HAL_Delay(499);
+	  //HAL_Delay(499);
+
+	  if(HAL_GPIO_ReadPin(Button_GPIO_Port, Button_Pin) == GPIO_PIN_RESET){
+		  HAL_Delay(50);
+		  while (HAL_GPIO_ReadPin(Button_GPIO_Port, Button_Pin) == GPIO_PIN_RESET);
+		  HAL_GPIO_TogglePin(Blue_LED_GPIO_Port, Blue_LED_Pin);
+	  }
+
+
 
     /* USER CODE END WHILE */
 
