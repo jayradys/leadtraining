@@ -67,7 +67,8 @@ UART_HandleTypeDef huart3;
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 /* USER CODE BEGIN PV */
-
+#define Blue_LED_GPIO_Port 0x40020400U
+#define Blue_LED_Pin 7
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -129,6 +130,12 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  ///Toggle the LED output
+	  HAL_GPIO_TogglePin(Blue_LED_GPIO_Port, Blue_LED_Pin);
+
+	  //Create a delay of 500ms
+	  HAL_Delay(499);
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
