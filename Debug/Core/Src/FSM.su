@@ -1,0 +1,3 @@
+../Core/Src/FSM.c:4:6:InitializeFSM	16	static
+../Core/Src/FSM.c:9:10:NextStateFunction	24	static
+../Core/Src/FSM.c:73:6:OutputFunction	16	static
