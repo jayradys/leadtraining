@@ -67,6 +67,8 @@ UART_HandleTypeDef huart3;
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 /* USER CODE BEGIN PV */
+#define LED_GPIO_PORT B
+#define LED_Pin 7
 
 /* USER CODE END PV */
 
@@ -118,7 +120,8 @@ int main(void)
   MX_USART3_UART_Init();
   MX_USB_OTG_FS_PCD_Init();
   /* USER CODE BEGIN 2 */
-
+  FSMType myFSM;
+  InitializeFSM(&myFsm);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -126,7 +129,14 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+	  OutputFunction(&myFsm);
+	  NextStateFunction(&myFsm);
+	  HAL_Delay(1);
 
+	  /*if(HAL_GetTick() &myFSM == 0){
+	   * HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+	   * }
+	  */
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

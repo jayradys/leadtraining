@@ -74,19 +74,19 @@ void OutputFunction(FSMType *FSM){
 	switch (FSM->CurrentState){
 		case S1_Press:
 		case S1_Release:
-
+			FSM->StateCounter = 500;
 			break;
 		case S2_Press:
 		case S2_Release:
-
+			FSM->StateCounter = 250;
 			break;
 		case S3_Press:
 		case S3_Release:
-
+			FSM->StateCounter = 100;
 			break;
 		case S4_Press:
 		case S4_Release:
-
+			FSM->StateCounter = 50;
 			break;
 	}
 }
