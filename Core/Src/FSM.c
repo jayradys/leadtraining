@@ -8,6 +8,7 @@ void InitializeFSM(FSMType *FSM){
 
 FSMState NextStateFunction(FSMType *FSM){
 	FSMState NextState = S1_Press;
+	FSM->CurrentInput = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13);
 	switch (FSM->CurrentState){
 	case S1_Press:
 		if(FSM->CurrentInput == ACTIVE){
@@ -66,6 +67,7 @@ FSMState NextStateFunction(FSMType *FSM){
 		}
 		break;
 	}
+	FSM->CurrentState = NextState;
 	return NextState;
 }
 

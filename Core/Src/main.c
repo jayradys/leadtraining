@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "string.h"
+#include "FSM.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -67,8 +68,10 @@ UART_HandleTypeDef huart3;
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 /* USER CODE BEGIN PV */
-#define LED_GPIO_PORT B
-#define LED_Pin 7
+#define LED_GPIO_PORT GPIOB
+#define LED_PIN GPIO_PIN_7
+#define USER_Btn_GPIO_Port GPIOC
+#define USER_Btn_Pin GPIO_PIN_13
 
 /* USER CODE END PV */
 
@@ -121,7 +124,8 @@ int main(void)
   MX_USB_OTG_FS_PCD_Init();
   /* USER CODE BEGIN 2 */
   FSMType myFSM;
-  InitializeFSM(&myFsm);
+  InitializeFSM(&myFSM);
+  uint16_t compareCounter = 0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -129,14 +133,14 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	  OutputFunction(&myFsm);
-	  NextStateFunction(&myFsm);
+	  compareCounter += 1;
+	  if(compareCounter >= myFSM.StateCounter){
+		  HAL_GPIO_TogglePin(LED_GPIO_PORT, LED_PIN);
+		  compareCounter = 0;
+	  }
+	  OutputFunction(&myFSM);
+	  NextStateFunction(&myFSM);
 	  HAL_Delay(1);
-
-	  /*if(HAL_GetTick() &myFSM == 0){
-	   * HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-	   * }
-	  */
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -343,11 +347,11 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(USB_PowerSwitchOn_GPIO_Port, USB_PowerSwitchOn_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : USER_Btn_Pin */
-  GPIO_InitStruct.Pin = USER_Btn_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  /*Configure GPIO pin : PC13 */
+  GPIO_InitStruct.Pin = GPIO_PIN_13;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(USER_Btn_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LD1_Pin LD3_Pin LD2_Pin */
   GPIO_InitStruct.Pin = LD1_Pin|LD3_Pin|LD2_Pin;
