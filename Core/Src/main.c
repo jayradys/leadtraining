@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "string.h"
+#include "fsm.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -67,6 +68,11 @@ UART_HandleTypeDef huart3;
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 /* USER CODE BEGIN PV */
+FSMType myFSM;
+#define LED_GPIO_PORT GPIOB
+#define LED_PIN GPIO_PIN_7
+uint32_t lastButtonPress = 0;  // Add this
+#define DEBOUNCE_DELAY 200
 
 /* USER CODE END PV */
 
@@ -118,6 +124,8 @@ int main(void)
   MX_USART3_UART_Init();
   MX_USB_OTG_FS_PCD_Init();
   /* USER CODE BEGIN 2 */
+  InitializeFSM(&myFSM);
+  uint16_t compareCounter = 0;
 
   /* USER CODE END 2 */
 
@@ -126,7 +134,13 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+	  compareCounter += 1;
+	  if(compareCounter >= myFSM.StateCounter){
+		  HAL_GPIO_TogglePin(LED_GPIO_PORT, LED_PIN);
+		  compareCounter = 0;
+	  }
+	  OutputFunction(&myFSM);
+	  HAL_Delay(1);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -369,7 +383,11 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-
+	uint32_t currentTime = HAL_GetTick();
+	if(currentTime - lastButtonPress > DEBOUNCE_DELAY){
+		myFSM.CurrentState = NextStateFunction(&myFSM);
+		lastButtonPress = currentTime;
+	}
 }
 
 /* USER CODE END 4 */
