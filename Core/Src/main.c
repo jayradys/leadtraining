@@ -69,9 +69,12 @@ UART_HandleTypeDef huart3;
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 /* USER CODE BEGIN PV */
-#define NUMBER_OF_SAMPLES 1
+#define NUMBER_OF_SAMPLES 500
 #define NUMBER_OF_INPUTS 1
 #define NUMBER_OF_CONVERSIONS (NUMBER_OF_INPUTS*NUMBER_OF_SAMPLES)
+char OutputBuffer[128];
+static uint32_t ADCBuffer[NUMBER_OF_CONVERSIONS];
+static uint32_t ADCBufferIndex = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -87,7 +90,50 @@ static void MX_ADC1_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void PrintOutputBuffer(uint8_t *OutputBuffer){
+		uint32_t StringLength;
+		HAL_StatusTypeDef HALStatus;
+		for(StringLength = 0; *(OutputBuffer+StringLength); StringLength++);
+		HALStatus = HAL_UART_Transmit(&huart3, OutputBuffer, StringLength, HAL_MAX_DELAY);
+		if(HALStatus != HAL_OK){
+			Error_Handler();
+		}
+	}
 
+void writeDebug(const char *buffer, uint8_t length)
+{
+    HAL_UART_Transmit(&huart3, (uint8_t *) buffer, length, HAL_MAX_DELAY);
+}
+
+void writeDebugString(const char *buffer)
+{
+    writeDebug(buffer, strlen(buffer));
+}
+
+void writeDebugFormat(const char *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+
+    va_list args_copy;
+    va_copy(args_copy, args);
+    int buff_size = vsnprintf(NULL, 0, format, args_copy);
+    va_end(args_copy);
+
+    char *buff = malloc(buff_size + 1);
+
+    if (buff == NULL)
+    {
+        va_end(args);
+        return;
+    }
+
+    vsnprintf(buff, buff_size + 1, format, args);
+    writeDebug(buff, buff_size);
+    free(buff);
+
+    va_end(args);
+}
 /* USER CODE END 0 */
 
 /**
@@ -98,6 +144,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+
 
   /* USER CODE END 1 */
 
@@ -124,9 +171,7 @@ int main(void)
   MX_USB_OTG_FS_PCD_Init();
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
-  if(HAL_ADCEx_Calibration_Start(&hadc1) != HAL_OK){
-	  Error_Handler();
-  }
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -134,7 +179,6 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	  //Start ADC conversion
 	  HAL_ADC_Start(&hadc1);
 
 	  //Wait until conversion is complete
@@ -142,7 +186,13 @@ int main(void)
 	  HAL_ADC_Stop(&hadc1);
 
 	  //Store the conversion value in the buffer and update the buffer
-	  ADCBuffer[ADCBufferIndex] = HAL_ADC_GetValue(&hadc1);
+	  for(int i = 0; i++; i < 6){
+		  sprintf((char *) OutputBuffer, "ADC sample = %u\r\n",HAL_ADC_GetValue(&hadc1));
+		  writeDebugString(OutputBuffer[i]);
+		  HAL_Delay(100);
+	  }
+
+	  /**ADCBuffer[ADCBufferIndex] = HAL_ADC_GetValue(&hadc1);
 	  ADCBufferIndex++;
 
 	  if(ADCBufferIndex == NUMBER_OF_CONVERSIONS){
@@ -151,9 +201,11 @@ int main(void)
 		  //Print buffer contents to terminal window via UART
 		  for(uint32_t i = 0; 1 < NUMBER_OF_SAMPLES; i++){
 			  sprintf((char *) OutputBuffer, "ADC sample = %u\r\n",ADCBuffer[i]);
-			  PrintOutputBuffer(OutputBuffer);
+			  HAL_Delay(500);
+	  		  PrintOutputBuffer(OutputBuffer);
 		  }
-	  }
+	  }**/
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -255,7 +307,7 @@ static void MX_ADC1_Init(void)
 
   /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
   */
-  sConfig.Channel = ADC_CHANNEL_0;
+  sConfig.Channel = ADC_CHANNEL_3;
   sConfig.Rank = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
