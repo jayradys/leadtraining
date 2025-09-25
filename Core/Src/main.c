@@ -60,6 +60,8 @@ ETH_DMADescTypeDef DMATxDscrTab[ETH_TX_DESC_CNT] __attribute__((section(".TxDecr
 
 ETH_TxPacketConfig TxConfig;
 
+ADC_HandleTypeDef hadc1;
+
 ETH_HandleTypeDef heth;
 
 UART_HandleTypeDef huart3;
@@ -67,7 +69,13 @@ UART_HandleTypeDef huart3;
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 /* USER CODE BEGIN PV */
+#define NUMBER_OF_SAMPLES 500
+#define NUMBER_OF_INPUTS 1
+#define NUMBER_OF_CONVERSIONS (NUMBER_OF_INPUTS * NUMBER_OF_SAMPLES)
 
+char OutputBuffer[128];
+static uint32_t ADCBuffer[NUMBER_OF_CONVERSIONS];
+static uint32_t ADCBufferIndex = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -76,6 +84,7 @@ static void MX_GPIO_Init(void);
 static void MX_ETH_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_USB_OTG_FS_PCD_Init(void);
+static void MX_ADC1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -93,7 +102,15 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+	void PrintOutputBuffer(uint8_t *OutputBuffer){
+			uint32_t StringLength;
+			HAL_StatusTypeDef HALStatus;
+			for(StringLength = 0; *(OutputBuffer+StringLength); StringLength++);
+			HALStatus = HAL_UART_Transmit(&huart3, OutputBuffer, StringLength, HAL_MAX_DELAY);
+			if(HALStatus != HAL_OK){
+				Error_Handler();
+			}
+		}
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -117,6 +134,7 @@ int main(void)
   MX_ETH_Init();
   MX_USART3_UART_Init();
   MX_USB_OTG_FS_PCD_Init();
+  MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -126,6 +144,24 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+	  //Start ADC Conversion
+	  	  HAL_ADC_START(&hadc1);
+
+	  	  //Wait until conversion is complete
+	  	  HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+	  	  HAL_ADC_Stop(&hadc1);
+
+	  	  ADCBuffer[ADCBufferIndex] = HAL_ADC_GetValue(&hadc1);
+	  	  ADCBufferIndex++;
+
+	  	  if(ADCBufferIndex == NUMBER_OF_CONVERSIONS){
+	  		  ADCBufferIndex = 0;
+
+	  		  for(uint32_t i = 0; i < NUMBER_OF_SAMPLES; i++){
+	  			  sprintf((char *) OutputBuffer, "ADC_Sample = %u\r\n",ADCBuffer[i]);
+	  			  PrintOutputBuffer(OutputBuffer);
+	  		  }
+	  	  }
 
     /* USER CODE BEGIN 3 */
   }
@@ -187,6 +223,58 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief ADC1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_ADC1_Init(void)
+{
+
+  /* USER CODE BEGIN ADC1_Init 0 */
+
+  /* USER CODE END ADC1_Init 0 */
+
+  ADC_ChannelConfTypeDef sConfig = {0};
+
+  /* USER CODE BEGIN ADC1_Init 1 */
+
+  /* USER CODE END ADC1_Init 1 */
+
+  /** Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
+  */
+  hadc1.Instance = ADC1;
+  hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
+  hadc1.Init.Resolution = ADC_RESOLUTION_12B;
+  hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
+  hadc1.Init.ContinuousConvMode = DISABLE;
+  hadc1.Init.DiscontinuousConvMode = DISABLE;
+  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+  hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+  hadc1.Init.NbrOfConversion = 1;
+  hadc1.Init.DMAContinuousRequests = DISABLE;
+  hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+  if (HAL_ADC_Init(&hadc1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
+  */
+  sConfig.Channel = ADC_CHANNEL_3;
+  sConfig.Rank = ADC_REGULAR_RANK_1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN ADC1_Init 2 */
+
+  /* USER CODE END ADC1_Init 2 */
+
 }
 
 /**
