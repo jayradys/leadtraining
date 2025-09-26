@@ -145,23 +145,28 @@ int main(void)
   {
     /* USER CODE END WHILE */
 	  //Start ADC Conversion
-	  	  HAL_ADC_START(&hadc1);
+	  	  HAL_ADC_Start(&hadc1);
 
 	  	  //Wait until conversion is complete
 	  	  HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
 	  	  HAL_ADC_Stop(&hadc1);
 
 	  	  ADCBuffer[ADCBufferIndex] = HAL_ADC_GetValue(&hadc1);
+	  	  float voltage = ADCBuffer[ADCBufferIndex] / 4096.0 * 3.3;
 	  	  ADCBufferIndex++;
 
-	  	  if(ADCBufferIndex == NUMBER_OF_CONVERSIONS){
+	  	  sprintf((char *) OutputBuffer, "ADC_Sample = %f\r\n",voltage);
+	  	  PrintOutputBuffer(OutputBuffer);
+	  	  HAL_Delay(100);
+
+	  	  /**if(ADCBufferIndex == NUMBER_OF_CONVERSIONS){
 	  		  ADCBufferIndex = 0;
 
 	  		  for(uint32_t i = 0; i < NUMBER_OF_SAMPLES; i++){
 	  			  sprintf((char *) OutputBuffer, "ADC_Sample = %u\r\n",ADCBuffer[i]);
 	  			  PrintOutputBuffer(OutputBuffer);
 	  		  }
-	  	  }
+	  	  }**/
 
     /* USER CODE BEGIN 3 */
   }
