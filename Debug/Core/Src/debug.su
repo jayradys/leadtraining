@@ -1,0 +1,3 @@
+../Core/Src/debug.c:6:6:writeDebug	16	static
+../Core/Src/debug.c:11:6:writeDebugString	16	static
+../Core/Src/debug.c:16:6:writeDebugFormat	24	static
