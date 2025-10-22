@@ -47,7 +47,9 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint8_t RX_Buffer [6] ;
+uint8_t RX_Buffer [1] ;
+uint8_t TX_Buffer [6] = {29, 30, 31, 32, 33, 34};
+uint8_t TempTX_Buffer [1] ;
 int size = sizeof(RX_Buffer) / sizeof(RX_Buffer[0]);
 
 #define imuAddr 0x68
@@ -100,8 +102,7 @@ int main(void)
   MX_USB_OTG_FS_PCD_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-  HAL_I2C_Master_Receive(&hi2c1, imuAddrShifted, (uint8_t *)RX_Buffer, 1,1000); //Receiving in Blocking mode
-  HAL_Delay(100);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -109,10 +110,23 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	  for(int i = 0; i < 6; i++){
-		  writeDebugFormat("Output %u\r\n", RX_Buffer[i]);
+	  for(int i = 0; i < 6; i += 2){
+		  TempTX_Buffer[0] = TX_Buffer[i];
+		  HAL_I2C_Master_Transmit(&hi2c1, imuAddrShifted, (uint8_t *)TempTX_Buffer, 1,1000);
+		  HAL_I2C_Master_Receive(&hi2c1, imuAddrShifted, (uint8_t *)RX_Buffer, 1,1000);
+		  uint8_t prev = RX_Buffer[0];
+
+		  TempTX_Buffer[0] = TX_Buffer[i + 1];
+		  HAL_I2C_Master_Transmit(&hi2c1, imuAddrShifted, (uint8_t *)TempTX_Buffer, 1,1000);
+		  HAL_I2C_Master_Receive(&hi2c1, imuAddrShifted, (uint8_t *)RX_Buffer, 1,1000);
+		  writeDebugFormat("Output %u\r\n", (RX_Buffer[0] + prev));
 		  HAL_Delay(100);
 	  }
+	  /**for(int i = 0; i < 6; i += 2){
+		  writeDebugFormat("Output %u\r\n", RX_Buffer[i] + RX_Buffer[i + 1]);
+		  HAL_Delay(100);
+	  }**/
+	  writeDebugFormat("\n");
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
